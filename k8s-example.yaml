@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wsproxy
+  labels:
+    app: wsproxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wsproxy
+  template:
+    metadata:
+      labels:
+        app: wsproxy
+    spec:
+      containers:
+        - name: wsproxy
+          image: ghcr.io/uranuswch/wsproxy:latest
+          imagePullPolicy: Always
+          args:
+            - "-backend=ws://your-backend.default.svc.cluster.local:9010/ajaxchattest"
+            - "-port=:8080"
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wsproxy
+  labels:
+    app: wsproxy
+spec:
+  selector:
+    app: wsproxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
