@@ -1,0 +1,10 @@
+services:
+  wsproxy:
+    image: ghcr.io/uranuswch/wsproxy:latest
+    container_name: wsproxy
+    restart: unless-stopped
+    command:
+      - "-backend=wss://demo.piesocket.com/v3/channel_123?api_key=YOUR_API_KEY&notify_self=1"
+      - "-port=:8080"
+    ports:
+      - "8080:8080"
