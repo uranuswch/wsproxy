@@ -10,6 +10,7 @@ import (
 var (
 	backend = flag.String("backend", "", "Backend URL for proxying")
 	port    = flag.String("port", ":8080", "proxy port")
+	uri     = flag.String("uri", "wsproxy", "uri to proxy")
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 		panic(err)
 	}
 	// proxy path
-	http.HandleFunc("/wsproxy", wp.Proxy)
+	http.HandleFunc("/"+*uri, wp.Proxy)
 	err = http.ListenAndServe(*port, nil)
 	if err != nil {
 		panic(err)
